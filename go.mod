@@ -1,4 +1,4 @@
-module github.com/rviscarra/webrtc-remote-screen
+module oneplay-videostream-browser
 
 go 1.12
 
