@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"encoders"
-	"rdisplay"
+	"oneplay-videostream-browser/internal/encoders"
+	"oneplay-videostream-browser/internal/rdisplay"
 
 	"github.com/google/uuid"
 	"github.com/pion/sdp"

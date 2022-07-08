@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"rdisplay"
+	"oneplay-videostream-browser/rdisplay"
 	"rtc"
 )
 
