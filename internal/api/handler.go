@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"internal/rdisplay"
-	"internal/rtc"
+	"rdisplay"
+	"rtc"
 )
 
 func handleError(w http.ResponseWriter, err error) {
