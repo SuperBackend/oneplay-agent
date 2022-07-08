@@ -3,8 +3,8 @@ package rtc
 import (
 	"fmt"
 
-	"encoders"
-	"rdisplay"
+	"oneplay-videostream-browser/internal/encoders"
+	"oneplay-videostream-browser/internal/rdisplay"
 )
 
 // RemoteScreenService is our implementation of the rtc.Service
