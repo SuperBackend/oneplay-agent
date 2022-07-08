@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"rdisplay"
-	"rtc"
+	"oneplay-videostream-browser/internal/rdisplay"
+	"oneplay-videostream-browser/rtc"
 )
 
 func handleError(w http.ResponseWriter, err error) {

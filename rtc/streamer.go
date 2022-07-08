@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"image"
 
-	"encoders"
-	"rdisplay"
+	"oneplay-videostream-browser/internal/encoders"
+	"oneplay-videostream-browser/internal/rdisplay"
 
 	"github.com/nfnt/resize"
 	"github.com/pion/webrtc/v2"

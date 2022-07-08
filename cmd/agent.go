@@ -9,10 +9,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/rviscarra/webrtc-remote-screen/internal/api"
-	"github.com/rviscarra/webrtc-remote-screen/internal/encoders"
-	"github.com/rviscarra/webrtc-remote-screen/internal/rdisplay"
-	"github.com/rviscarra/webrtc-remote-screen/internal/rtc"
+	"oneplay-videostream-browser/internal/api"
+	"oneplay-videostream-browser/internal/encoders"
+	"oneplay-videostream-browser/internal/rdisplay"
+	"oneplay-videostream-browser/rtc"
 )
 
 const (
