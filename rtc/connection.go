@@ -103,7 +103,7 @@ func (p *RemoteScreenPeerConn) ProcessOffer(strOffer string) (string, error) {
 
 	pcconf := webrtc.Configuration{
 		ICEServers: []webrtc.ICEServer{
-			webrtc.ICEServer{
+			{
 				URLs: []string{p.stunServer},
 			},
 		},
@@ -169,7 +169,11 @@ func (p *RemoteScreenPeerConn) ProcessOffer(strOffer string) (string, error) {
 		screen.Bounds.Dy(),
 	}
 
+	fmt.Printf("encCodec: %+v\nsourceSize: %+v\nfps: %+v\n", encCodec, sourceSize, p.grabber.Fps())
 	encoder, err := p.encService.NewEncoder(encCodec, sourceSize, p.grabber.Fps())
+	fmt.Println("encoder start: ============")
+	fmt.Println(encoder)
+	fmt.Println("encoder end: ============")
 	if err != nil {
 		return "", err
 	}

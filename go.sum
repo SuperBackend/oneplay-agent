@@ -11,6 +11,16 @@ github.com/gen2brain/shm v0.0.0-20180314170312-6c18ff7f8b90 h1:QagTG5rauLt6pVVEh
 github.com/gen2brain/shm v0.0.0-20180314170312-6c18ff7f8b90/go.mod h1:uF6rMu/1nvu+5DpiRLwusA6xB8zlkNoGzKn8lmYONUo=
 github.com/gen2brain/x264-go v0.0.0-20180306035800-58f586137654 h1:RNpogAT5Qz69YLIu6+92q5sSw61PjjhDj4upH2el5pk=
 github.com/gen2brain/x264-go v0.0.0-20180306035800-58f586137654/go.mod h1:17kvfYQKi9/QHiKPeqmJW0YuDPZEgy72tSBVmweSyiE=
+github.com/gen2brain/x264-go v0.2.0 h1:4rpAC+0gwjsiRryWYXe0/cYujNu10VAkw0QyRfTMKyE=
+github.com/gen2brain/x264-go v0.2.0/go.mod h1:X0UBuPKXLZLyijyuwegYhv54LHhCLvdcuPYSuXnBasM=
+github.com/gen2brain/x264-go/x264c v0.0.0-20210523185153-54bdbefd1212 h1:vnOSGR5cgY4y0VBEkJBOPIOhUaNslmON7/Gc4z2Xdck=
+github.com/gen2brain/x264-go/x264c v0.0.0-20210523185153-54bdbefd1212/go.mod h1:lshP4xmJNPCHscewcvsemVs62q8J8F0mh+FYBAfVG60=
+github.com/gen2brain/x264-go/x264c v0.0.0-20220622130850-9f6285ee8073 h1:dfhjlWNSQ+42ig4w8I5yW7KxhW+D+S0oK7DQyWYdtEc=
+github.com/gen2brain/x264-go/x264c v0.0.0-20220622130850-9f6285ee8073/go.mod h1:lshP4xmJNPCHscewcvsemVs62q8J8F0mh+FYBAfVG60=
+github.com/gen2brain/x264-go/yuv v0.0.0-20210523185153-54bdbefd1212 h1:AXM+YcjeLgUJgWZekChQtJHFJe+A//2/WSmyEs1OaqU=
+github.com/gen2brain/x264-go/yuv v0.0.0-20210523185153-54bdbefd1212/go.mod h1:xGOE/2fXjxu/ZONrm0EPqKHj/XDc13al1o48I3FQfHA=
+github.com/gen2brain/x264-go/yuv v0.0.0-20220622130850-9f6285ee8073 h1:Hp3CnrtDOPGypQqWVzDWu/QjOLw1MYRRmyF8oywlwDU=
+github.com/gen2brain/x264-go/yuv v0.0.0-20220622130850-9f6285ee8073/go.mod h1:xGOE/2fXjxu/ZONrm0EPqKHj/XDc13al1o48I3FQfHA=
 github.com/golang/mock v1.2.0 h1:28o5sBqPkBsMGnC6b4MvE2TzSr5/AT4c/1fLqVGIwlk=
 github.com/golang/mock v1.2.0/go.mod h1:oTYuIxOrZwtPieC+H1uAHpcLFnEyAGVDL/k47Jfbm0A=
 github.com/golang/protobuf v1.2.0 h1:P3YflyNX/ehuJFLhxviNdFxQPkGK5cDcApsge1SqnvM=

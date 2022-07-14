@@ -5,7 +5,9 @@ go 1.12
 require (
 	github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802 // indirect
 	github.com/gen2brain/shm v0.0.0-20180314170312-6c18ff7f8b90 // indirect
-	github.com/gen2brain/x264-go v0.0.0-20180306035800-58f586137654
+	github.com/gen2brain/x264-go v0.2.0
+	github.com/gen2brain/x264-go/x264c v0.0.0-20210523185153-54bdbefd1212 // indirect
+	github.com/gen2brain/x264-go/yuv v0.0.0-20210523185153-54bdbefd1212 // indirect
 	github.com/google/uuid v1.1.1
 	github.com/kbinani/screenshot v0.0.0-20190612115439-c3c7d93696f3
 	github.com/lxn/win v0.0.0-20190618153233-9c04a4e8d0b8 // indirect
