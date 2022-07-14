@@ -138,9 +138,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log(adapter.browserDetails.browser);
 
-    const userMediaPromise =  (adapter.browserDetails.browser === 'safari') ?
-      navigator.mediaDevices.getUserMedia({ video: true }) : 
-      Promise.resolve(null);
+    // const userMediaPromise =  (adapter.browserDetails.browser === 'safari') ?
+    //   navigator.mediaDevices.getUserMedia({ video: true }) : 
+    //   Promise.resolve(null);
+    const userMediaPromise =  Promise.resolve(null);
+    
     console.log(peerConnection)
     console.log("userMediaPromise")
     console.log(userMediaPromise)
