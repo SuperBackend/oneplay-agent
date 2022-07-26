@@ -14,6 +14,7 @@ require (
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/pion/sdp v1.3.0
 	github.com/pion/webrtc/v2 v2.1.0
+	github.com/rs/cors v1.8.2 // indirect
 	golang.org/x/sync v0.0.0-20190227155943-e225da77a7e6 // indirect
 	golang.org/x/text v0.3.1-0.20180807135948-17ff2d5776d2 // indirect
 )

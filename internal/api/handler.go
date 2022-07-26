@@ -7,6 +7,8 @@ import (
 
 	"oneplay-videostream-browser/internal/rdisplay"
 	"oneplay-videostream-browser/rtc"
+
+	"github.com/rs/cors"
 )
 
 func handleError(w http.ResponseWriter, err error) {
@@ -14,10 +16,16 @@ func handleError(w http.ResponseWriter, err error) {
 	w.WriteHeader(http.StatusInternalServerError)
 }
 
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
+
 // MakeHandler returns an HTTP handler for the session service
 func MakeHandler(webrtc rtc.Service, display rdisplay.Service) http.Handler {
 	mux := http.NewServeMux()
+
 	mux.HandleFunc("/session", func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
 		if r.Method != http.MethodPost {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
@@ -55,6 +63,8 @@ func MakeHandler(webrtc rtc.Service, display rdisplay.Service) http.Handler {
 	})
 
 	mux.HandleFunc("/screens", func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
+
 		if r.Method != http.MethodGet {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
@@ -82,5 +92,18 @@ func MakeHandler(webrtc rtc.Service, display rdisplay.Service) http.Handler {
 
 		w.Write(payload)
 	})
-	return mux
+
+	cors := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{
+			http.MethodPost,
+			http.MethodGet,
+		},
+		AllowedHeaders:   []string{"*"},
+		AllowCredentials: false,
+	})
+
+	handler := cors.Handler(mux)
+
+	return handler
 }
