@@ -1,6 +1,7 @@
 package rtc
 
 import (
+	"encoding/json"
 	"fmt"
 	"image"
 	"log"
@@ -12,6 +13,7 @@ import (
 	"oneplay-videostream-browser/internal/rdisplay"
 
 	"github.com/google/uuid"
+	"github.com/gorilla/websocket"
 	"github.com/pion/sdp"
 	"github.com/pion/webrtc/v2"
 )
@@ -82,19 +84,32 @@ func getTrackDirection(sdp *sdp.SessionDescription) webrtc.RTPTransceiverDirecti
 	return webrtc.RTPTransceiverDirectionInactive
 }
 
+type iceResponse struct {
+	WSType string
+	ICE    webrtc.ICECandidateInit
+}
+
+var flag bool
+
+type newSessionResponse struct {
+	WSType string
+	Answer string
+}
+
 // ProcessOffer handles the SDP offer coming from the client,
 // return the SDP answer that must be passed back to stablish the WebRTC
 // connection.
-func (p *RemoteScreenPeerConn) ProcessOffer(strOffer string) (string, error) {
+func (p *RemoteScreenPeerConn) ProcessOffer(strOffer string, conn *websocket.Conn, messageType int) {
+	flag = false
 	sdp := sdp.SessionDescription{}
 	err := sdp.Unmarshal(strOffer)
 	if err != nil {
-		return "", err
+		panic(err)
 	}
 
 	webrtcCodec, encCodec, err := findBestCodec(&sdp, p.encService, "42e01f")
 	if err != nil {
-		return "", err
+		panic(err)
 	}
 	mediaEngine := webrtc.MediaEngine{}
 	mediaEngine.RegisterCodec(webrtcCodec)
@@ -112,19 +127,9 @@ func (p *RemoteScreenPeerConn) ProcessOffer(strOffer string) (string, error) {
 
 	peerConn, err := api.NewPeerConnection(pcconf)
 	if err != nil {
-		return "", err
+		panic(err)
 	}
 	p.connection = peerConn
-
-	peerConn.OnICEConnectionStateChange(func(connState webrtc.ICEConnectionState) {
-		if connState == webrtc.ICEConnectionStateConnected {
-			p.start()
-		}
-		if connState == webrtc.ICEConnectionStateDisconnected {
-			p.Close()
-		}
-		log.Printf("Connection state: %s \n", connState.String())
-	})
 
 	track, err := peerConn.NewTrack(
 		webrtcCodec.PayloadType,
@@ -144,7 +149,8 @@ func (p *RemoteScreenPeerConn) ProcessOffer(strOffer string) (string, error) {
 			Direction: webrtc.RTPTransceiverDirectionSendonly,
 		})
 	} else {
-		return "", fmt.Errorf("Unsupported transceiver direction")
+		fmt.Printf("Unsupported transceiver direction")
+		return
 	}
 
 	offerSdp := webrtc.SessionDescription{
@@ -153,14 +159,14 @@ func (p *RemoteScreenPeerConn) ProcessOffer(strOffer string) (string, error) {
 	}
 	err = peerConn.SetRemoteDescription(offerSdp)
 	if err != nil {
-		return "", err
+		panic(err)
 	}
 
 	p.track = track
 
 	answer, err := peerConn.CreateAnswer(nil)
 	if err != nil {
-		return "", err
+		panic(err)
 	}
 
 	screen := p.grabber.Screen()
@@ -175,21 +181,98 @@ func (p *RemoteScreenPeerConn) ProcessOffer(strOffer string) (string, error) {
 	fmt.Println(encoder)
 	fmt.Println("encoder end: ============")
 	if err != nil {
-		return "", err
+		return
 	}
 
 	size, err := encoder.VideoSize()
 	if err != nil {
-		return "", err
+		return
 	}
 
 	p.streamer = newRTCStreamer(p.track, &p.grabber, &encoder, size)
 
+	peerConn.OnICECandidate(func(c *webrtc.ICECandidate) {
+		if flag {
+			fmt.Println("ICE Candidate ------------------------")
+			if c == nil {
+				return
+			}
+
+			// outbound, marshalErr := json.Marshal(c.ToJSON())
+			// if marshalErr != nil {
+			// 	log.Fatal(marshalErr)
+			// 	return
+			// }
+
+			msg := iceResponse{
+				WSType: "ICE",
+				ICE:    c.ToJSON(),
+			}
+
+			payload, err := json.Marshal(msg)
+			if err != nil {
+				log.Fatal(err)
+				return
+			}
+
+			if err := conn.WriteMessage(messageType, payload); err != nil {
+				log.Fatal(err)
+				return
+			}
+		}
+		flag = true
+	})
+
 	err = peerConn.SetLocalDescription(answer)
 	if err != nil {
-		return "", err
+		return
 	}
-	return answer.SDP, nil
+
+	resAnswer := answer.SDP
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	payload, err := json.Marshal(newSessionResponse{
+		WSType: "SDP",
+		Answer: resAnswer,
+	})
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	fmt.Println("Before sending to client")
+	if err := conn.WriteMessage(messageType, payload); err != nil {
+		panic(err)
+	}
+
+	peerConn.OnICEConnectionStateChange(func(connState webrtc.ICEConnectionState) {
+		if connState == webrtc.ICEConnectionStateConnected {
+			p.start()
+		}
+		if connState == webrtc.ICEConnectionStateDisconnected {
+			p.Close()
+		}
+		log.Printf("Connection state: %s \n", connState.String())
+	})
+}
+
+func (p *RemoteScreenPeerConn) ProcessICE(ICE webrtc.ICECandidateInit) {
+	// var candidate webrtc.ICECandidateInit
+	// if err := json.Unmarshal(ICE, &candidate); err != nil {
+	// 	log.Fatal(err)
+	// 	return
+	// }
+	fmt.Println("ICE - START1")
+	if ICE.Candidate != "" {
+		fmt.Println("ICE - START2")
+		if err := p.connection.AddICECandidate(ICE); err != nil {
+			log.Fatal(err)
+			return
+		}
+	}
 }
 
 func (p *RemoteScreenPeerConn) start() {

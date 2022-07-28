@@ -36,7 +36,7 @@ func MakeHandler(webrtc rtc.Service, display rdisplay.Service) http.Handler {
 			return
 		}
 
-		answer, err := peer.ProcessOffer(req.Offer)
+		answer, err := peer.ProcessOffer(req.Offer, nil, 0)
 
 		if err != nil {
 			handleError(w, err)

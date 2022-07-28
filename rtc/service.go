@@ -2,6 +2,9 @@ package rtc
 
 import (
 	"io"
+
+	"github.com/gorilla/websocket"
+	"github.com/pion/webrtc/v2"
 )
 
 type videoStreamer interface {
@@ -12,7 +15,8 @@ type videoStreamer interface {
 // RemoteScreenConnection Represents a WebRTC connection to a single peer
 type RemoteScreenConnection interface {
 	io.Closer
-	ProcessOffer(offer string) (string, error)
+	ProcessOffer(offer string, conn *websocket.Conn, messageType int)
+	ProcessICE(ICE webrtc.ICECandidateInit)
 }
 
 // Service WebRTC service
