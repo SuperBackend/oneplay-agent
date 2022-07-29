@@ -24,7 +24,7 @@ const (
 
 func main() {
 
-	socketUrl := "ws://localhost:8080" + "/host"
+	socketUrl := "ws://oneplay-heroku.herokuapp.com" + "/host"
 	ws, _, err := websocket.DefaultDialer.Dial(socketUrl, nil)
 	if err != nil {
 		log.Fatal(err)
