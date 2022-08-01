@@ -14,21 +14,38 @@ import (
 	"oneplay-videostream-browser/rtc"
 
 	"github.com/gorilla/websocket"
-	"github.com/pion/webrtc/v2"
+	"github.com/pion/webrtc/v3"
 )
 
 const (
 	httpDefaultPort   = "9000"
-	defaultStunServer = "stun:stun.l.google.com:19302"
+	defaultStunServer = "turn:13.250.13.83:3478?transport=udp"
 )
 
 func main() {
 
 	socketUrl := "ws://oneplay-heroku.herokuapp.com" + "/host"
+	// socketUrl := "ws://localhost:8080" + "/ws"
 	ws, _, err := websocket.DefaultDialer.Dial(socketUrl, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// sigStr := "host"
+	// sigData := make([]byte, len(sigStr))
+	// copied := copy(sigData, sigStr)
+	// fmt.Println(copied)
+
+	// err = ws.WriteMessage(1, sigData)
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// _, pMsg, err := ws.ReadMessage()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println(pMsg)
 
 	//httpPort := flag.String("http.port", httpDefaultPort, "HTTP listen port")
 	stunServer := flag.String("stun.server", defaultStunServer, "STUN server URL (stun:)")
@@ -50,6 +67,7 @@ func main() {
 	}
 
 	var webrtc rtc.Service
+	fmt.Println(*stunServer, video, enc)
 	webrtc = rtc.NewRemoteScreenService(*stunServer, video, enc)
 
 	//mux := http.NewServeMux()
@@ -107,7 +125,12 @@ type screensResponse struct {
 var ICEinfo webrtc.ICECandidateInit
 var peer rtc.RemoteScreenConnection
 
-func reader(conn *websocket.Conn, webrtc rtc.Service, display rdisplay.Service) {
+var flag_sdp bool
+var flag_ice bool
+
+func reader(conn *websocket.Conn, rtcService rtc.Service, display rdisplay.Service) {
+	flag_sdp = false
+	flag_ice = false
 	fmt.Println("Finding Panic Error : 1")
 	for {
 		// read in a message
@@ -120,22 +143,16 @@ func reader(conn *websocket.Conn, webrtc rtc.Service, display rdisplay.Service) 
 		}
 
 		var msg *Message
-		fmt.Println("------------------------------------------------")
-		fmt.Println(string(p))
+
 		err = json.Unmarshal(p, &msg)
 		if err != nil {
 			fmt.Println("Error occurred in Unmarshal")
 			log.Fatal(err)
 			return
 		}
-		fmt.Println("Finding Panic Error : 3")
-
-		fmt.Println(msg.WSType)
-		fmt.Println(msg.SDP)
-		fmt.Println(msg.Screen)
 
 		if msg.WSType == "Screen" {
-			fmt.Println("In Screen Progress")
+
 			screens, err := display.Screens()
 
 			if err != nil {
@@ -159,25 +176,36 @@ func reader(conn *websocket.Conn, webrtc rtc.Service, display rdisplay.Service) 
 			}
 
 			// conn.WriteMessage(messageType, payload)
-			fmt.Println("Before sending to Client")
+
 			conn.WriteMessage(messageType, payload)
 		} else if msg.WSType == "SDP" {
-			fmt.Println("In SDP Progress")
+
 			var err error
-			peer, err = webrtc.CreateRemoteScreenConnection(msg.Screen, 60)
+			peer, err = rtcService.CreateRemoteScreenConnection(msg.Screen, 60)
 			if err != nil {
 				log.Fatal(err)
 				return
 			}
 
+			flag_sdp = true
+
 			peer.ProcessOffer(msg.SDP, conn, messageType)
-			peer.ProcessICE(ICEinfo)
+
+			if flag_ice {
+				peer.ProcessICE(ICEinfo)
+			}
 		} else if msg.WSType == "ICE" {
 
 			fmt.Println("ICE Confirmation")
 
 			fmt.Println(msg.ICE)
 			ICEinfo = msg.ICE
+
+			flag_ice = true
+
+			if flag_sdp {
+				peer.ProcessICE(ICEinfo)
+			}
 		}
 	}
 }

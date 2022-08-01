@@ -4,7 +4,7 @@ import (
 	"io"
 
 	"github.com/gorilla/websocket"
-	"github.com/pion/webrtc/v2"
+	"github.com/pion/webrtc/v3"
 )
 
 type videoStreamer interface {

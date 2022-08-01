@@ -36,7 +36,7 @@ func MakeHandler(webrtc rtc.Service, display rdisplay.Service) http.Handler {
 			return
 		}
 
-		answer, err := peer.ProcessOffer(req.Offer, nil, 0)
+		peer.ProcessOffer(req.Offer, nil, 0)
 
 		if err != nil {
 			handleError(w, err)
@@ -44,7 +44,7 @@ func MakeHandler(webrtc rtc.Service, display rdisplay.Service) http.Handler {
 		}
 
 		payload, err := json.Marshal(newSessionResponse{
-			Answer: answer,
+			Answer: "answer",
 		})
 		if err != nil {
 			handleError(w, err)
